@@ -3,43 +3,50 @@ using UnityEngine;
 public class CitizenController : MonoBehaviour
 {
     public float moveSpeed = 1f;
-    public float moveDuration = 2f;
-    public float restDuration = 2f;
+    public float waitTime = 2f;
 
-    private Vector3 moveDirection;
-    private float timer;
-    private bool isMoving = true;
+    private Vector3[] patrolPoints = new Vector3[4];
+    private int currentPointIndex = 0;
+    private float waitTimer = 0f;
 
     void Start()
     {
-        PickNewDirection();
-        timer = moveDuration;
+        // 맵 네 모서리를 시계방향으로 순찰
+        patrolPoints[0] = new Vector3(-20f, 0.5f, 20f);
+        patrolPoints[1] = new Vector3(20f, 0.5f, 20f);
+        patrolPoints[2] = new Vector3(20f, 0.5f, -20f);
+        patrolPoints[3] = new Vector3(-20f, 0.5f, -20f);
+
+        transform.position = patrolPoints[0];
+        currentPointIndex = 1;
     }
 
     void Update()
     {
-        if (isMoving)
+        if (waitTimer > 0f)
         {
-            transform.position += moveDirection * moveSpeed * Time.deltaTime;
+            waitTimer -= Time.deltaTime;
+            return;
         }
 
-        timer -= Time.deltaTime;
+        Vector3 target = patrolPoints[currentPointIndex];
+        Vector3 direction = (target - transform.position).normalized;
 
-        if (timer <= 0f)
+        // 이동 및 회전
+        transform.position += direction * moveSpeed * Time.deltaTime;
+
+        if (direction != Vector3.zero)
         {
-            isMoving = !isMoving;
-            timer = isMoving ? moveDuration : restDuration;
-
-            if (isMoving)
-            {
-                PickNewDirection();
-            }
+            Quaternion targetRot = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * 5f);
         }
-    }
 
-    void PickNewDirection()
-    {
-        float angle = Random.Range(0f, 360f);
-        moveDirection = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), 0f, Mathf.Sin(angle * Mathf.Deg2Rad)).normalized;
+        // 도착 처리
+        if (Vector3.Distance(transform.position, target) < 0.2f)
+        {
+            waitTimer = waitTime;
+            currentPointIndex = (currentPointIndex + 1) % patrolPoints.Length;
+        }
     }
 }
+    

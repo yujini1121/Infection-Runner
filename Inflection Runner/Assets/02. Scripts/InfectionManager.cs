@@ -10,14 +10,19 @@ public class InfectionManager : MonoBehaviour
     public float infectionRadius = 2f;
     public float infectionDelay = 3f;
 
+    private System.Collections.Generic.HashSet<GameObject> infectedCitizens = new System.Collections.Generic.HashSet<GameObject>();
+
     void Update()
     {
         foreach (GameObject citizen in citizens)
         {
+            if (infectedCitizens.Contains(citizen)) continue;
+
             float distance = Vector3.Distance(zombie.transform.position, citizen.transform.position);
             if (distance <= infectionRadius)
             {
                 StartCoroutine(InfectCitizen(citizen));
+                infectedCitizens.Add(citizen);
             }
         }
     }
@@ -28,7 +33,7 @@ public class InfectionManager : MonoBehaviour
 
         // 시민을 좀비로 변환
         citizen.tag = "Zombie";
-        citizen.AddComponent<ZombieRandomWalker>();
-        Destroy(citizen.GetComponent<CitizenController>());
+        citizen.GetComponent<CitizenController>().enabled = false;
+        citizen.GetComponent<ZombieRandomWalker>().enabled = true;
     }
 }
