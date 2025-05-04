@@ -40,10 +40,22 @@ public class UnitController : MonoBehaviour
         }
         else if (type == UnitType.Zombie)
         {
-            citizenModel.SetActive(false);
-            zombieModel.SetActive(true);
+            // 시민의 현재 위치를 저장
+            Vector3 lastPosition = citizenModel.transform.position;
+            Quaternion lastRotation = citizenModel.transform.rotation;
+
+            // 시민 모델 비활성화 및 컨트롤러 비활성화
             if (citizenController != null) citizenController.enabled = false;
+            citizenModel.SetActive(false);
+
+            // 좀비 모델 위치 및 회전 설정
+            zombieModel.transform.position = lastPosition;
+            zombieModel.transform.rotation = lastRotation;
+
+            // 좀비 모델 활성화 및 컨트롤러 활성화
+            zombieModel.SetActive(true);
             if (zombieController != null) zombieController.enabled = true;
+
             gameObject.tag = "Zombie";
         }
     }
@@ -63,8 +75,15 @@ public class UnitController : MonoBehaviour
             animator.SetTrigger("Infect");
         }
 
-        yield return new WaitForSeconds(5f);
+        // 5초 동안 멈춤
+        if (citizenController != null)
+        {
+            citizenController.enabled = false; // 시민 이동을 멈추기
+        }
 
+        yield return new WaitForSeconds(5f); // 5초 기다림
+
+        // 좀비로 전환
         SetUnitType(UnitType.Zombie);
     }
 }
