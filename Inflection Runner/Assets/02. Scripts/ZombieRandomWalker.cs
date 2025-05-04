@@ -1,20 +1,16 @@
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 public class ZombieRandomWalker : MonoBehaviour
 {
-    [Header("이동 설정")]
     public float minSpeed = 1f;
     public float maxSpeed = 3f;
     public float minMoveDuration = 2f;
     public float maxMoveDuration = 5f;
     public float rotationSpeed = 5f;
 
-    [Header("UI")]
     public TextMeshProUGUI debugText;
 
-    [Header("맵 경계")]
     private Vector3 minBounds = new Vector3(-23.5f, 0.5f, -23.5f);
     private Vector3 maxBounds = new Vector3(23.5f, 0.5f, 23.5f);
 

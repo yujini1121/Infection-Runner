@@ -11,7 +11,6 @@ public class CitizenController : MonoBehaviour
 
     void Start()
     {
-        // 맵 네 모서리를 시계방향으로 순찰
         patrolPoints[0] = new Vector3(-20f, 0.5f, 20f);
         patrolPoints[1] = new Vector3(20f, 0.5f, 20f);
         patrolPoints[2] = new Vector3(20f, 0.5f, -20f);
@@ -32,7 +31,6 @@ public class CitizenController : MonoBehaviour
         Vector3 target = patrolPoints[currentPointIndex];
         Vector3 direction = (target - transform.position).normalized;
 
-        // 이동 및 회전
         transform.position += direction * moveSpeed * Time.deltaTime;
 
         if (direction != Vector3.zero)
@@ -41,7 +39,6 @@ public class CitizenController : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * 5f);
         }
 
-        // 도착 처리
         if (Vector3.Distance(transform.position, target) < 0.2f)
         {
             waitTimer = waitTime;
@@ -49,4 +46,3 @@ public class CitizenController : MonoBehaviour
         }
     }
 }
-    
